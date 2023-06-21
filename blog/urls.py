@@ -1,6 +1,6 @@
 from django.urls import path
 # from . import views
-from blog.views import Index, List, Write, Detail
+from blog.views import Index, List, Write, Detail, Edit
 
 app_name = 'blog'
 
@@ -14,6 +14,7 @@ urlpatterns = [
     # 글 작성
     path("write/", Write.as_view(), name='write'), # /blog/write/
     # 글 수정
+    path("edit/<int:pk>/", Edit.as_view(), name='edit'),
     # 글 삭제
     # 코멘트 작성
     # 코멘트 삭제

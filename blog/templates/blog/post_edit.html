@@ -1,0 +1,10 @@
+{% extends 'blog/base.html' %} 
+
+{% block content %}
+    <h2>블로그 글 수정 화면</h2>
+    <form action="{% url 'blog:edit' pk=post.pk %}" method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <input type="submit" class="btn btn-outline-success" value="저장">
+    </form>
+{% endblock %}

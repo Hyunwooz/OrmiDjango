@@ -1,9 +1,9 @@
 from django.shortcuts import render, redirect
 from django.views import View
-from django.views.generic import ListView, CreateView, DeleteView
+from django.views.generic import ListView, CreateView, DeleteView, UpdateView
 from .models import Post
 from .forms import PostForm
-from django.urls import reverse_lazy
+from django.urls import reverse_lazy, reverse
 
 # Create your views here.
 # def index(request):
@@ -63,3 +63,15 @@ class Detail(DeleteView):
     model = Post
     template_name = 'blog/post_detail.html'
     context_object_name = 'post'
+    
+    
+class Edit(UpdateView):
+    model = Post
+    template_name = 'blog/post_edit.html'
+    context_object_name = 'post'
+    form_class = PostForm # 폼
+    success_url = reverse_lazy('blog:list')
+    
+    def get_success_url(self):
+        pk = self.kwargs["pk"]
+        return reverse('blog:detail', kwargs={'pk':pk})

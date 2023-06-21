@@ -1,26 +1,23 @@
 {% extends 'blog/base.html' %} 
 
 {% block content %}
-    <h1>블로그 게시판 화면</h1>
     <p>블로그 게시판 첫 화면 입니다.</p>
     <!-- url 'app_name:name' -->
-    <a href="{% url 'blog:write' %}">글 작성</a>
+    <a class="btn btn-outline-success" href="{% url 'blog:write' %}">글 작성</a>
     <!-- 조건문 -->
     <!-- 글이 있을 때 : 테이블 출력 -->
     {% if posts %}
-    <table>
-        <thead>
+    <table class="table table-bordered">
+        <thead class="table-light">
             <tr>
                 <th>제목</th>
-                <th>내용</th>
                 <th>작성자</th>
             </tr>
         </thead>
         <tbody>
             {% for post in posts %}
                 <tr>
-                    <td><a href="{% url 'blog:detail' pk=post.pk %}">{{ post.title }}</a></td>
-                    <td>{{ post.content }}</td>
+                    <td><a class="btn" href="{% url 'blog:detail' pk=post.pk %}">{{ post.title }}</a></td>
                     <td>{{ post.writer }}</td>
                 </tr>
             {% endfor %}
