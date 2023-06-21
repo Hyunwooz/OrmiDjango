@@ -1,8 +1,10 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django.views import View
+from django.views.generic import ListView, CreateView
 from .models import Post
 from .forms import PostForm
+from django.urls import reverse_lazy
 
 # Create your views here.
 # def index(request):
@@ -11,6 +13,7 @@ from .forms import PostForm
 #     # 나머지 요청
 #     # 에러, 예외처리
 #     return HttpResponse('No')
+
 
 class Index(View):
     def get(self, request):
@@ -29,13 +32,26 @@ class Index(View):
 # write
 # post - form
 # 글 작성 화면
-def write(request):
-    if request.method == "POST":
-        # form 확인
-        form = PostForm(request.POST)
-        if form.is_valid():
-            post = form.save()
-            return redirect('blog:list')
+# def write(request):
+#     if request.method == "POST":
+#         # form 확인
+#         form = PostForm(request.POST)
+#         if form.is_valid():
+#             post = form.save()
+#             return redirect('blog:list')
         
-    form = PostForm()
-    return render(request, 'blog/write.html', {'form': form})
+#     form = PostForm()
+#     return render(request, 'blog/write.html', {'form': form})
+
+
+# Django 자체의 클래스 뷰 기능도 강력, 편리
+# django.views.generic -> ListView
+class List(ListView):
+    model = Post
+    context_object_name = 'post_list'
+
+
+class Create(CreateView):
+    model = Post
+    form_class = PostForm
+    success_url = reverse_lazy('blog:list')
