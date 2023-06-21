@@ -1,7 +1,6 @@
 from django.shortcuts import render, redirect
-from django.http import HttpResponse
 from django.views import View
-from django.views.generic import ListView, CreateView
+from django.views.generic import ListView, CreateView, DeleteView
 from .models import Post
 from .forms import PostForm
 from django.urls import reverse_lazy
@@ -45,13 +44,22 @@ class Index(View):
 
 
 # Django 자체의 클래스 뷰 기능도 강력, 편리
+# model, template_name, context_object_name,
+# paginate_by, form_class, form_valid(), get_queryset()
 # django.views.generic -> ListView
 class List(ListView):
-    model = Post
-    context_object_name = 'post_list'
+    model = Post # 모델
+    template_name = 'blog/post_list.html' # 템플릿
+    context_object_name = 'posts' # 변수 값의 이름
 
 
-class Create(CreateView):
+class Write(CreateView):
+    model = Post # 모델
+    form_class = PostForm # 폼
+    success_url = reverse_lazy('blog:list') # 성공시 보내줄 url
+
+
+class Detail(DeleteView):
     model = Post
-    form_class = PostForm
-    success_url = reverse_lazy('blog:list')
+    template_name = 'blog/post_detail.html'
+    context_object_name = 'post'
