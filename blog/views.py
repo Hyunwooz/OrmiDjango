@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render
 from django.views import View
 from django.views.generic import ListView, CreateView, DeleteView, UpdateView
 from .models import Post
@@ -47,6 +47,8 @@ class Index(View):
 # model, template_name, context_object_name,
 # paginate_by, form_class, form_valid(), get_queryset()
 # django.views.generic -> ListView
+
+
 class List(ListView):
     model = Post # 모델
     template_name = 'blog/post_list.html' # 템플릿
@@ -63,15 +65,33 @@ class Detail(DeleteView):
     model = Post
     template_name = 'blog/post_detail.html'
     context_object_name = 'post'
-    
-    
-class Edit(UpdateView):
+
+
+class Update(UpdateView):
     model = Post
     template_name = 'blog/post_edit.html'
+    fields = ['title', 'content']
+    # success_url = reverse_lazy('blog:list')
+    
+    # initial 기능 사용 -> form에 값을 미리 넣어주기 위해서
+    def get_initial(self):
+        initial = super().get_initial() # UpdateView.get_initial()
+        post = self.get_object() # pk 기반으로 객체를 가져옴
+        initial['title'] = post.title
+        initial['content'] = post.content
+        return initial
+
+    def get_success_url(self):
+        post = self.get_object() # pk 기반으로 현재 객체 가져오기
+        return reverse('blog:detail', kwargs={'pk':post.pk})
+
+
+class Edit(UpdateView):
+    model = Post
+    template_name = 'blog/post_edit2.html'
     context_object_name = 'post'
     form_class = PostForm # 폼
-    success_url = reverse_lazy('blog:list')
     
     def get_success_url(self):
-        pk = self.kwargs["pk"]
-        return reverse('blog:detail', kwargs={'pk':pk})
+        post = self.get_object() # pk 기반으로 현재 객체 가져오기
+        return reverse('blog:detail', kwargs={'pk':post.pk})

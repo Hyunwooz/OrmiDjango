@@ -1,10 +1,12 @@
 {% extends 'blog/base.html' %} 
 
 {% block content %}
-    <h2>블로그 글 수정 화면</h2>
-    <form action="{% url 'blog:edit' pk=post.pk %}" method="post">
+    <form method="post">
         {% csrf_token %}
-        {{ form.as_p }}
-        <input type="submit" class="btn btn-outline-success" value="저장">
+        {{ form.title.label_tag }}
+        <input type="text" name="{{ form.title.name }}" value="{{ form.initial.title }}">
+        {{ form.content.label_tag }}
+        <textarea name="{{ form.content.name }}" type="text">{{ form.initial.content }}</textarea>
+        <input class="btn btn-outline-success" type="submit" value="저장">
     </form>
 {% endblock %}
