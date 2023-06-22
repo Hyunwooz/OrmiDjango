@@ -1,9 +1,0 @@
-{% extends 'blog/base.html' %} 
-
-{% block content %}
-    <form method="post">
-        {% csrf_token %}
-        {{ form.as_div }}
-        <input type="submit" class="btn btn-outline-success" value="저장">
-    </form>
-{% endblock %}

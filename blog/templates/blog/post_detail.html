@@ -6,7 +6,36 @@
     <p>작성자: {{ post.writer }}</p>
     <p>작성일: {{ post.created_at }}</p>
     <p>작성일: {{ post.updated_at }}</p>
-    <a href="{% url 'blog:edit' pk=post.pk %}" class="btn btn-outline-success">Edit</a>
-    <a href="{% url 'blog:edit2' pk=post.pk %}" class="btn btn-outline-success">Edit2</a>
+    <a href="{% url 'blog:edit' pk=post.pk %}" class="btn btn-outline-success">수정</a>
+    <form action="{% url 'blog:delete' pk=post.pk %}" method="post">
+        {% csrf_token %}
+        <input type="submit" class="btn btn-outline-success" value="삭제"></input>
+    </form>
     <a href="{% url 'blog:list' %}" class="btn btn-outline-success">목록</a>
+
+    {% comment %} Comment sections {% endcomment %}
+
+    <form action="{% url 'blog:comment' pk=post.pk %}" method="post">
+        {% csrf_token %}
+        <input type="text" name="content" required></input>
+        <input type="submit" class="btn btn-outline-success" value="추가"></input>
+    </form>
+
+    {% if comments %}
+        <p>Comments</p>
+        <ul>
+        {% for comment in comments %}
+            <li>
+                <p>{{ comment.content }}</p>
+                <form action="{% url 'blog:commentDelete' post_id=post.pk comment_id=comment.pk %}" method="post">
+                    {% csrf_token %}
+                    <input type="submit" class="btn btn-outline-success" value="삭제"></input>
+                </form>
+            </li>
+        {% endfor %}
+        </ul>
+    {% else %}
+        <p>댓글이 없습니다.</p>
+    {% endif %}
+
 {% endblock %}
