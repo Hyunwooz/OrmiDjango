@@ -31,16 +31,16 @@ class Index(View):
 # write
 # post - form
 # 글 작성 화면
-def write(request):
-    if request.method == "POST":
-        # form 확인
-        form = PostForm(request.POST)
-        if form.is_valid():
-            post = form.save()
-            return redirect('blog:list')
+# def write(request):
+#     if request.method == "POST":
+#         # form 확인
+#         form = PostForm(request.POST)
+#         if form.is_valid():
+#             post = form.save()
+#             return redirect('blog:list')
         
-    form = PostForm()
-    return render(request, 'blog/write.html', {'form': form})
+#     form = PostForm()
+#     return render(request, 'blog/write.html', {'form': form})
 
 
 # Django 자체의 클래스 뷰 기능도 강력, 편리
@@ -89,7 +89,6 @@ class Update(UpdateView):
 class Delete(DeleteView):
     model = Post
     success_url = reverse_lazy('blog:list')
-    
 
 
 class DetailView(View):
@@ -104,9 +103,12 @@ class DetailView(View):
         # 댓글
         comments = Comment.objects.filter(post_id=pk)
         
+        form = CommentForm()
+        
         context = {
             'post': post,
-            'comments':comments
+            'comments': comments,
+            'form': form
         }
         return render(request,'blog/post_detail.html', context)
 
@@ -124,7 +126,6 @@ class CommentWrite(View):
             post = Post.objects.get(pk=pk)
             # 댓글 객체 생성, create 메서드를 사용할 때는 Save 필요 없음.
             comment = Comment.objects.create(post=post, content=content)
-            
             return redirect('blog:detail', pk=pk)
 
 

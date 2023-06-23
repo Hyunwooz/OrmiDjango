@@ -19,7 +19,7 @@ urlpatterns = [
     # 글 삭제
     path("detail/<int:pk>/delete", Delete.as_view(), name='delete'),
     # 코멘트 작성
-    path("detail/<int:pk>/comment", CommentWrite.as_view(), name='comment'),
+    path("detail/<int:pk>/comment/write", CommentWrite.as_view(), name='cm-write'),
     # 코멘트 삭제
     path("detail/<int:post_id>/comment/<int:comment_id>/delete", CommentDelete.as_view(), name='commentDelete'),
     
