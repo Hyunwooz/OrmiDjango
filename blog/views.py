@@ -1,8 +1,8 @@
 from django.shortcuts import render, redirect
 from django.views import View
 from django.views.generic import ListView, CreateView, DeleteView, UpdateView, DetailView
-from .models import Post, Comment
-from .forms import PostForm, CommentForm
+from .models import Post, Comment, HashTag
+from .forms import PostForm, CommentForm, HashTagForm
 from django.urls import reverse_lazy, reverse
 
 # Create your views here.
@@ -61,15 +61,15 @@ class Write(CreateView):
     success_url = reverse_lazy('blog:list') # 성공시 보내줄 url
 
 
-class Detail(DetailView):
-    model = Post
-    # template_name = 'blog/post_detail.html'
-    context_object_name = 'post'
+# class Detail(DetailView):
+#     model = Post
+#     # template_name = 'blog/post_detail.html'
+#     context_object_name = 'post'
 
 
 class Update(UpdateView):
     model = Post
-    # template_name = 'blog/post_edit.html'
+    template_name = 'blog/post_edit.html'
     fields = ['title', 'content']
     # success_url = reverse_lazy('blog:list')
     
@@ -101,15 +101,21 @@ class DetailView(View):
         # 장고 ORM
         post = Post.objects.get(pk=pk)
         # 댓글
-        comments = Comment.objects.filter(post_id=pk)
-        
-        form = CommentForm()
+        comments = Comment.objects.filter(post=post)
+        hashtags = HashTag.objects.filter(post=post)
+        # 댓글 Form
+        comment_form = CommentForm()
+        # 해쉬태그 Form
+        hashtag_form = HashTagForm()
         
         context = {
             'post': post,
             'comments': comments,
-            'form': form
+            'hashtags': hashtags,
+            'comment_form': comment_form,
+            'hashtag_form': hashtag_form,
         }
+        
         return render(request,'blog/post_detail.html', context)
 
 
@@ -130,9 +136,36 @@ class CommentWrite(View):
 
 
 class CommentDelete(View):
-    # def get(self, request):
-    #     pass
-    def post(self, request, post_id, comment_id):
-        comment = Comment.objects.get(pk=comment_id)
+    def post(self, request, pk):
+        # 지울 객체 찾기
+        comment = Comment.objects.get(pk=pk)
+        # 상세페이지로 돌아가기
+        post_id = comment.post.id
+        # 삭제
         comment.delete()
+        
+        return redirect('blog:detail', pk=post_id)
+    
+    
+### hashtag
+class HashTagWrite(View):
+    def post(self, request, pk):
+        form = HashTagForm(request.POST)
+        if form.is_valid():
+            name = form.cleaned_data['name']
+            post = Post.objects.get(pk=pk)
+            hashtag = HashTag.objects.create(post=post, name=name)
+            return redirect('blog:detail', pk=pk)
+
+
+class HashTagDelete(View):
+    def post(self, request, pk):
+        # 해시태그의 pk(id)
+        # 해시태그 불러오기
+        hashtag = HashTag.objects.get(pk=pk)
+        # 포스트의 pk값
+        post_id = hashtag.post.id
+        # 해시태그 삭제
+        hashtag.delete()
+
         return redirect('blog:detail', pk=post_id)

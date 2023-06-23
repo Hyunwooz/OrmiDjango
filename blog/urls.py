@@ -1,6 +1,6 @@
 from django.urls import path
 # from . import views
-from blog.views import Index, List, Write, Detail, Update, Delete, DetailView,CommentWrite,CommentDelete
+from blog.views import Index, List, Write, Update, Delete, DetailView,CommentWrite,CommentDelete,HashTagWrite,HashTagDelete
 
 app_name = 'blog'
 
@@ -21,6 +21,9 @@ urlpatterns = [
     # 코멘트 작성
     path("detail/<int:pk>/comment/write", CommentWrite.as_view(), name='cm-write'),
     # 코멘트 삭제
-    path("detail/<int:post_id>/comment/<int:comment_id>/delete", CommentDelete.as_view(), name='commentDelete'),
-    
+    path("detail/comment/<int:pk>/delete", CommentDelete.as_view(), name='cm-delete'),
+    # 태그 작성
+    path("detail/<int:pk>/hashtag/write", HashTagWrite.as_view(), name='tag-write'),
+    # 태그 삭제
+    path("detail/hashtag/<int:pk>/delete", HashTagDelete.as_view(), name='tag-delete'),
 ]
