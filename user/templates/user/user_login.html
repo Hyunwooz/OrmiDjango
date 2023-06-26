@@ -1,0 +1,10 @@
+{% extends 'user/base.html' %} 
+
+{% block content %}
+    <h2>로그인</h2>
+    <form action="{% url 'user:login' %}" method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <input class="btn btn-outline-success" type="submit" value="로그인">
+    </form>
+{% endblock %}
