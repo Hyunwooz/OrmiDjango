@@ -1,6 +1,6 @@
 from django.urls import path
 # from . import views
-from blog.views import Index, List, Write, Update, Delete, DetailView,CommentWrite,CommentDelete,HashTagWrite,HashTagDelete
+from blog.views import Index, Write, Update, Delete, DetailView,CommentWrite,CommentDelete,HashTagWrite,HashTagDelete
 
 app_name = 'blog'
 
@@ -8,7 +8,7 @@ urlpatterns = [
     # path(패턴, 매핑) /blog/
     # path("", views.index), # FBV
     # 글 목록 조회
-    path("", List.as_view(), name='list'), # /blog/
+    path("", Index.as_view(), name='list'), # /blog/
     # 글 상세 조회
     # path("detail/<int:pk>/", Detail.as_view(), name='detail'),
     path("detail/<int:pk>/", DetailView.as_view(), name='detail'),
