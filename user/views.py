@@ -45,9 +45,9 @@ class Login(View):
         if request.user.is_authenticated:
             return redirect('blog:list')
         
-        form = LoginForm(request.POST)
+        form = LoginForm(request, request.POST)
         if form.is_valid():
-            email = form.cleaned_data['email']
+            email = form.cleaned_data['username']
             password = form.cleaned_data['password']
             user = authenticate(username=email, password=password) # True, False
             
