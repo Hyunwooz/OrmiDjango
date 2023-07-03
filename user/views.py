@@ -15,10 +15,9 @@ class Registration(View):
     def get(self, request):
         # 회원가입 페이지
         # 정보를 입력할 폼을 보여주어야 한다.
-        
         form = RegisterForm()
         context = {
-            'form' : form
+            'form': form
         }
         return render(request, 'user/user_register.html', context)
     
@@ -33,41 +32,36 @@ class Registration(View):
 ### Login
 class Login(View):
     def get(self, request):
-        
-        ### 추가한 내용
         if request.user.is_authenticated:
             return redirect('blog:list')
         
         form = LoginForm()
         context = {
-            'form' : form
+            'form': form
         }
         return render(request, 'user/user_login.html', context)
-    
+        
     def post(self, request):
-        ### 추가한 내용
         if request.user.is_authenticated:
             return redirect('blog:list')
         
         form = LoginForm(request.POST)
-        
         if form.is_valid():
-
             email = form.cleaned_data['email']
             password = form.cleaned_data['password']
-            user = authenticate(username=email, password=password)
-
+            user = authenticate(username=email, password=password) # True, False
+            
             if user:
                 login(request, user)
                 return redirect('blog:list')
-        
-            form.add_error(None, '아이디가 없습니다.')
             
+            form.add_error(None, '아이디가 없습니다.')
         
         context = {
             'form': form
         }
-        return render(request, 'user/user_login.html',context)
+        
+        return render(request, 'user/user_login.html', context)
     
     
 ### Logout
