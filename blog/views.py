@@ -107,23 +107,28 @@ class Write(LoginRequiredMixin, View):
 #         return reverse('blog:detail', kwargs={'pk':post.pk})
 
 class Update(View):
-    def get(self, request, pk):
+    def get(self, request, pk): # post_id
         post = Post.objects.get(pk=pk)
-        form = PostForm(initial={'title': post.title,'content': post.content})
+        form = PostForm(initial={'title': post.title, 'content': post.content})
         context = {
             'form': form,
+            'post': post
         }
         return render(request, 'blog/post_edit.html', context)
     def post(self, request, pk):
         post = Post.objects.get(pk=pk)
         form = PostForm(request.POST)
         if form.is_valid():
-            pass
-        form.add_error(None,'폼이 유효하지 않습니다.')
+            post.title = form.cleaned_data['title']
+            post.content = form.cleaned_data['content']
+            post.save()
+            return redirect('blog:detail', pk=pk)
+        
+        form.add_error('폼이 유효하지 않습니다.')
         context = {
             'form': form
         }
-        return render(request,'blog/form_error.html',context)
+        return render(request, 'blog/post_edit.html', context)
 
 
 class Delete(DeleteView):
