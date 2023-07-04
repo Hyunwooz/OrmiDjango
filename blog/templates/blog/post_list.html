@@ -18,7 +18,7 @@
             {% for post in posts %}
                 <tr>
                     <td><a class="btn" href="{% url 'blog:detail' pk=post.pk %}">{{ post.title }}</a></td>
-                    <td>{{ post.writer.name }}</td>
+                    <td>{{ post.writer.username }}</td>
                 </tr>
             {% endfor %}
         </tbody>
