@@ -3,7 +3,10 @@
 {% block content %}
     <p>블로그 게시판 첫 화면 입니다.</p>
     <!-- url 'app_name:name' -->
-    <a class="btn btn-outline-success" href="{% url 'blog:write' %}">글 작성</a>
+    <form action="{% url 'blog:write' %}" method="get">
+        <input type="hidden" name="{{ redirect_field_name }}" value="{{ request.GET.next }}">
+        <input type="submit" value="글 작성">
+    </form>
     <!-- 조건문 -->
     <!-- 글이 있을 때 : 테이블 출력 -->
     {% if posts %}
@@ -18,7 +21,7 @@
             {% for post in posts %}
                 <tr>
                     <td><a class="btn" href="{% url 'blog:detail' pk=post.pk %}">{{ post.title }}</a></td>
-                    <td>{{ post.writer.username }}</td>
+                    <td>{{ post.writer.email }}</td>
                 </tr>
             {% endfor %}
         </tbody>

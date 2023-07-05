@@ -64,10 +64,12 @@ class Index(View):
 
 class Write(LoginRequiredMixin, View):
     # Mixin : LoginRequiredMixin
-    login_url = '/user/login'
+    # login_url = '/user/login'
     # redirect_field_name = 'next'
     
     def get(self, request):
+        # next_path = request.GET.get('next')
+        # next_url = 
         form = PostForm()
         context = {
             'form': form,
@@ -185,32 +187,33 @@ class CommentWrite(View):
     #     pass
     def post(self, request, pk):
         form = CommentForm(request.POST)
-        # 해당 아이디에 해당하는 글 불러옴.
+        # 해당 아이디에 해당하는 글 불러옴
         post = Post.objects.get(pk=pk)
         
         if form.is_valid():
             # 사용자에게 댓글 내용을 받아옴
-            content = form.cleaned_data['content']
+            content = form.cleaned_data['content']    
+            # 유저 정보 가져오기
             writer = request.user
-            # 댓글 객체 생성, create 메서드를 사용할 때는 Save 필요 없음.
+            # 댓글 객체 생성, create 메서드를 사용할 때는 save 필요 없음
             comment = Comment.objects.create(post=post, content=content, writer=writer)
+            # comment = Comment(post=post) -> comment.save()
             return redirect('blog:detail', pk=pk)
         
-        comments = Comment.objects.filter(post=post)
-        hashtags = HashTag.objects.filter(post=post)
-        comment_form = CommentForm()
+        form.add_error(None,'폼이 유효하지 않습니다.')
         hashtag_form = HashTagForm()
-        
-        form.add_error(None, '폼이 유효하지 않습니다.')
         context = {
-            'form': form,
+            "title": "Blog",
             'post': post,
-            'comment_form': comment_form,
+            'comments': post.comment_set.all(),
+            'hashtags': post.hashtag_set.all(),
+            'comment_form': form,
             'hashtag_form': hashtag_form
         }
-        return render(request,'blog/post_detail.html', context)
-
-
+        
+        return render(request, 'blog/post_detail.html', context)
+    
+    
 class CommentDelete(View):
     def post(self, request, pk):
         # 지울 객체 찾기
@@ -227,19 +230,25 @@ class CommentDelete(View):
 class HashTagWrite(View):
     def post(self, request, pk):
         form = HashTagForm(request.POST)
+        post = Post.objects.get(pk=pk)
         
         if form.is_valid():
             name = form.cleaned_data['name']
-            post = Post.objects.get(pk=pk)
             writer = request.user
             hashtag = HashTag.objects.create(post=post, name=name, writer=writer)
             return redirect('blog:detail', pk=pk)
         
-        form.add_error(None, '폼이 유효하지 않습니다.')
+        form.add_error(None,'폼이 유효하지 않습니다.')
+        comment_form = CommentForm()
         context = {
-            'form': form
+            "title": "Blog",
+            'post': post,
+            'comments': post.comment_set.all(),
+            'hashtags': post.hashtag_set.all(),
+            'comment_form': comment_form,
+            'hashtag_form': form
         }
-        return render(request,'blog/form_error.html', context)
+        return render(request,'blog/post_detail.html', context)
 
 
 class HashTagDelete(View):
