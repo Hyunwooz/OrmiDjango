@@ -11,11 +11,14 @@ from .forms import RegisterForm, LoginForm
 ### Registration
 class Registration(View):
     def get(self, request):
+        if request.user.is_authenticated:
+            return redirect('blog:list')
         # 회원가입 페이지
         # 정보를 입력할 폼을 보여주어야 한다.
         form = RegisterForm()
         context = {
-            'form': form
+            'form': form,
+            'title': 'User'
         }
         return render(request, 'user/user_register.html', context)
     
@@ -24,8 +27,8 @@ class Registration(View):
         if form.is_valid():
             user = form.save()
             # 로그인한 다음 이동
-            return redirect('blog:list')
-        
+            return redirect('uesr:login')
+
 
 ### Login
 class Login(View):
@@ -35,7 +38,8 @@ class Login(View):
         
         form = LoginForm()
         context = {
-            'form': form
+            'form': form,
+            'title': 'User'
         }
         return render(request, 'user/user_login.html', context)
         

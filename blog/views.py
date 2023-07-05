@@ -24,7 +24,8 @@ class Index(View):
         post_objs = Post.objects.all()
         # context = 데이터베이스에서 가져온 값
         context = {
-            "posts": post_objs
+            "posts": post_objs,
+            'title': 'Blog'
         }
         return render(request, 'blog/post_list.html', context)
 
@@ -63,10 +64,14 @@ class Index(View):
 
 class Write(LoginRequiredMixin, View):
     # Mixin : LoginRequiredMixin
+    login_url = '/user/login'
+    # redirect_field_name = 'next'
+    
     def get(self, request):
         form = PostForm()
         context = {
-            'form': form
+            'form': form,
+            'title': 'Blog'
         }
         return render(request,'blog/post_form.html',context)
     def post(self, request):
@@ -112,7 +117,8 @@ class Update(View):
         form = PostForm(initial={'title': post.title, 'content': post.content})
         context = {
             'form': form,
-            'post': post
+            'post': post,
+            'title': 'Blog'
         }
         return render(request, 'blog/post_edit.html', context)
     def post(self, request, pk):
@@ -167,6 +173,7 @@ class DetailView(View):
             'hashtags': hashtags,
             'comment_form': comment_form,
             'hashtag_form': hashtag_form,
+            'title': 'Blog'
         }
         
         return render(request,'blog/post_detail.html', context)
