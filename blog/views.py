@@ -69,7 +69,7 @@ class Write(LoginRequiredMixin, View):
     
     def get(self, request):
         # next_path = request.GET.get('next')
-        # next_url = 
+        # next_url = request.GET.get(self.redirect_field_name)
         form = PostForm()
         context = {
             'form': form,
@@ -132,8 +132,9 @@ class Update(View):
             post.save()
             return redirect('blog:detail', pk=pk)
         
-        form.add_error('폼이 유효하지 않습니다.')
+        form.add_error(None, '폼이 유효하지 않습니다.')
         context = {
+            "title": "Blog",
             'form': form
         }
         return render(request, 'blog/post_edit.html', context)
@@ -150,6 +151,8 @@ class Delete(View):
         post.delete()
         return redirect('blog:list')
 
+    # 클래스 자체에 아예 접근하지 못하게 -> LoginRequiredMixin
+    # Login이 되었을 때만 삭제 버튼이 보이게
 
 class DetailView(View):
     def get(self, request, pk):
@@ -200,7 +203,7 @@ class CommentWrite(View):
             # comment = Comment(post=post) -> comment.save()
             return redirect('blog:detail', pk=pk)
         
-        form.add_error(None,'폼이 유효하지 않습니다.')
+        # form.add_error(None,'폼이 유효하지 않습니다.')
         hashtag_form = HashTagForm()
         context = {
             "title": "Blog",
@@ -238,7 +241,7 @@ class HashTagWrite(View):
             hashtag = HashTag.objects.create(post=post, name=name, writer=writer)
             return redirect('blog:detail', pk=pk)
         
-        form.add_error(None,'폼이 유효하지 않습니다.')
+        # form.add_error(None,'폼이 유효하지 않습니다.')
         comment_form = CommentForm()
         context = {
             "title": "Blog",
