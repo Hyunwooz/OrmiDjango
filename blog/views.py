@@ -131,9 +131,9 @@ class Update(View):
         return render(request, 'blog/post_edit.html', context)
 
 
-class Delete(DeleteView):
-    model = Post
-    success_url = reverse_lazy('blog:list')
+# class Delete(DeleteView):
+#     model = Post
+#     success_url = reverse_lazy('blog:list')
 
 
 class Delete(View):
@@ -178,20 +178,30 @@ class CommentWrite(View):
     #     pass
     def post(self, request, pk):
         form = CommentForm(request.POST)
+        # 해당 아이디에 해당하는 글 불러옴.
+        post = Post.objects.get(pk=pk)
+        
         if form.is_valid():
             # 사용자에게 댓글 내용을 받아옴
             content = form.cleaned_data['content']
-            # 해당 아이디에 해당하는 글 불러옴.
-            post = Post.objects.get(pk=pk)
             writer = request.user
             # 댓글 객체 생성, create 메서드를 사용할 때는 Save 필요 없음.
             comment = Comment.objects.create(post=post, content=content, writer=writer)
             return redirect('blog:detail', pk=pk)
+        
+        comments = Comment.objects.filter(post=post)
+        hashtags = HashTag.objects.filter(post=post)
+        comment_form = CommentForm()
+        hashtag_form = HashTagForm()
+        
         form.add_error(None, '폼이 유효하지 않습니다.')
         context = {
-            'form': form
+            'form': form,
+            'post': post,
+            'comment_form': comment_form,
+            'hashtag_form': hashtag_form
         }
-        return render(request,'blog/form_error.html', context)
+        return render(request,'blog/post_detail.html', context)
 
 
 class CommentDelete(View):

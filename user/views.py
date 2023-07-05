@@ -25,7 +25,7 @@ class Registration(View):
             user = form.save()
             # 로그인한 다음 이동
             return redirect('blog:list')
-
+        
 
 ### Login
 class Login(View):
@@ -53,7 +53,7 @@ class Login(View):
                 login(request, user)
                 return redirect('blog:list')
             
-            form.add_error(None, '아이디가 없습니다.')
+        form.add_error(None, '아이디가 없습니다.')
         
         context = {
             'form': form

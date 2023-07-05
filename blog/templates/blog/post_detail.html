@@ -1,16 +1,7 @@
 {% extends 'blog/base.html' %} 
 
 {% block content %}
-
-{% if form.errors %}
-<!-- 내용 추가 -->
-    {% comment %} {% for errors in form.errors.values %}
-        {% for error in errors %}
-            <p>{{ error }}</p>
-        {% endfor %}
-    {% endfor %} {% endcomment %}
-    {% include 'form_error.html' %}
-{% else %}
+{% include 'blog/form_error.html' %}
     <hr>
     <h2>제목: {{ post.title }}</h2>
     <p>내용: {{ post.content }}</p>
@@ -36,9 +27,9 @@
     </form>
 
     <!-- 태그 출력 화면 -->
-    {% if hashtags %}
+    {% if post.hashtags.all %}
         <ul>
-        {% for hashtag in hashtags %}
+        {% for hashtag in post.hashtags.all %}
             <li>{{ hashtag }}
                 {% if hashtag.writer == request.user %}
                     <form action="{% url 'blog:tag-delete' pk=hashtag.pk %}" method="post">
@@ -63,9 +54,9 @@
     </form>
     <hr>
     <!-- 댓글 출력 화면 -->
-    {% if comments %}
+    {% if post.comment_set.all %}
         <ul>
-        {% for comment in comments %}
+        {% for comment in post.comment_set.all %}
             <li style="display: flex;">{{ comment.content }} / {{ comment.created_at }}
                 {% if comment.writer == request.user %}
                     <form action="{% url 'blog:cm-delete' pk=comment.pk %}" method="post">
@@ -79,6 +70,5 @@
     {% else %}
         <p>댓글이 없습니다.</p>
     {% endif %}
-{% endif %}
 
 {% endblock %}
