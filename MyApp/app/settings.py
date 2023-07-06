@@ -42,7 +42,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'django.restframework',
+    # 'django.rest_framework',
     'blog', # 내가 만든 앱 추가
     'user',
 ]

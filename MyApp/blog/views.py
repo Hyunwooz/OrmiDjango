@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect
 from django.views import View
 from django.views.generic import ListView, CreateView, DeleteView, UpdateView
 from django.contrib.auth.mixins import LoginRequiredMixin
-# from django.core import exceptions
+from django.core.exceptions import ValidationError, ObjectDoesNotExist
 from .models import Post, Comment, HashTag
 from .forms import PostForm, CommentForm, HashTagForm
 from django.urls import reverse_lazy, reverse
@@ -163,21 +163,44 @@ class DetailView(View):
         
         # 데이터베이스 방문
         # 해당 글
-        # 장고 ORM
+        # 장고 ORM (pk: 무조건 pk로 작성해야한다.)
         post = Post.objects.get(pk=pk)
+        # # 댓글
+        # comments = Comment.objects.filter(post=post)
+        # # 해시태그
+        # hashtags = HashTag.objects.filter(post=post)
+        # print(post)
         
         # 댓글
-        comments = Comment.objects.filter(post=post)
-        
+        # comments = Comment.objects.select_related('writer').filter(post=post)
+        # comments = Comment.objects.select_related('writer').filter(post__pk=pk)
+        comments = Comment.objects.select_related('post') # -> comments[0]
+        # comment = Comment.objects.select_related('post').first()
         # 해시태그
-        hashtags = HashTag.objects.filter(post=post)
+        # hashtags = HashTag.objects.select_related('writer').filter(post=post)
+        # hashtags = HashTag.objects.select_related('writer').filter(post__pk=pk)
+        hashtags = HashTag.objects.select_related('post')
+        # print(comments[0].post.title)
+        # for comment in comments:
+        #     print(comment.post)
+        # <QuerySet[]>
+        # value.attr
+        # print(hashtags)
         
         # 댓글 Form
         comment_form = CommentForm()
         
-        # 해쉬태그 Form
+        # 태그 Form
         hashtag_form = HashTagForm()
 
+        post = {
+            'pk': pk,
+            'title': comments[0].post.title,
+            'content': comments[0].post.content,
+            'writer': comments[0].post.writer,
+            'created_at': comments[0].post.created_at,
+        }
+        
         context = {
             'post': post,
             'comments': comments,
@@ -191,14 +214,19 @@ class DetailView(View):
 
 
 ### Comment
-class CommentWrite(View):
+class CommentWrite(LoginRequiredMixin, View):
     # def get(self, request):
     #     pass
+    '''
+    1. LoginRequiredMixin -> 삭제
+    2. 비회원 유저 권한 User
+    '''
     def post(self, request, pk):
         form = CommentForm(request.POST)
         # 해당 아이디에 해당하는 글 불러옴
         post = Post.objects.get(pk=pk)
-        
+        # get 관련 쿼리들은 해당 데이터가 없을 때 오류 발생
+        # get_or_404
         if form.is_valid():
             # 사용자에게 댓글 내용을 받아옴
             content = form.cleaned_data['content']    
@@ -207,17 +235,17 @@ class CommentWrite(View):
             # 댓글 객체 생성, create 메서드를 사용할 때는 save 필요 없음
             try:
                 comment = Comment.objects.create(post=post, content=content, writer=writer)
-                # 생성할 값이 이미 있다면 오류 발생
-                # Unique 값이 중복될 때
-                # 필드 값이 비어있을 때
-                # 외래키 관련 데이터베이스 오류
+                # 생성할 값이 이미 있다면 오류 발생, Unique 값이 중복될 때
+                # 필드 값이 비어있을 때 : ValidationError
+                # 외래키 관련 데이터베이스 오류 : ObjectDoesNotExist
                 # get_or_create() -> 2가지 경우의 리턴값
                 # comment, created = Comment.objects.get_or_create(post=post, content=content, writer=writer)
                 # if created: print('생성되었습니다.') else: print('이미 있습니다.')
                 # comment = Comment(post=post) -> comment.save()
-            except Exception as e:
-                print('Error occured : ',str(e))
-                
+            except ObjectDoesNotExist as e:
+                print('Post does not exist.', str(e))
+            except ValidationError as e:
+                print('Validation error occurred', str(e))
             return redirect('blog:detail', pk=pk)
         
         # form.add_error(None,'폼이 유효하지 않습니다.')
@@ -247,7 +275,7 @@ class CommentDelete(View):
     
     
 ### hashtag
-class HashTagWrite(View):
+class HashTagWrite(LoginRequiredMixin, View):
     def post(self, request, pk):
         form = HashTagForm(request.POST)
         post = Post.objects.get(pk=pk)
