@@ -12,6 +12,7 @@ urlpatterns = [
     # # 글 상세 조회
     # # path("detail/<int:pk>/", Detail.as_view(), name='detail'),
     # path("detail/<int:pk>/", DetailView.as_view(), name='detail'),
+    # path("detail/<int:pk>/", DetailView.as_view(), name='detail'),
     # # 글 작성
     # path("write/", Write.as_view(), name='write'), # /blog/write/
     # # 글 수정
