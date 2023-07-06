@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect
 from django.views import View
 from django.views.generic import ListView, CreateView, DeleteView, UpdateView
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.core.exceptions import Exception
+# from django.core import exceptions
 from .models import Post, Comment, HashTag
 from .forms import PostForm, CommentForm, HashTagForm
 from django.urls import reverse_lazy, reverse
@@ -165,15 +165,19 @@ class DetailView(View):
         # 해당 글
         # 장고 ORM
         post = Post.objects.get(pk=pk)
+        
         # 댓글
         comments = Comment.objects.filter(post=post)
+        
         # 해시태그
         hashtags = HashTag.objects.filter(post=post)
+        
         # 댓글 Form
         comment_form = CommentForm()
+        
         # 해쉬태그 Form
         hashtag_form = HashTagForm()
-        
+
         context = {
             'post': post,
             'comments': comments,
