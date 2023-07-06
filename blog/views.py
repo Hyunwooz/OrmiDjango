@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect
 from django.views import View
 from django.views.generic import ListView, CreateView, DeleteView, UpdateView
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.core.exceptions import Exception
 from .models import Post, Comment, HashTag
 from .forms import PostForm, CommentForm, HashTagForm
 from django.urls import reverse_lazy, reverse
@@ -116,6 +117,7 @@ class Write(LoginRequiredMixin, View):
 class Update(View):
     def get(self, request, pk): # post_id
         post = Post.objects.get(pk=pk)
+        # get()은 해당 조건이 없을 때 오류를 발생시킨다.
         form = PostForm(initial={'title': post.title, 'content': post.content})
         context = {
             'form': form,
@@ -199,8 +201,19 @@ class CommentWrite(View):
             # 유저 정보 가져오기
             writer = request.user
             # 댓글 객체 생성, create 메서드를 사용할 때는 save 필요 없음
-            comment = Comment.objects.create(post=post, content=content, writer=writer)
-            # comment = Comment(post=post) -> comment.save()
+            try:
+                comment = Comment.objects.create(post=post, content=content, writer=writer)
+                # 생성할 값이 이미 있다면 오류 발생
+                # Unique 값이 중복될 때
+                # 필드 값이 비어있을 때
+                # 외래키 관련 데이터베이스 오류
+                # get_or_create() -> 2가지 경우의 리턴값
+                # comment, created = Comment.objects.get_or_create(post=post, content=content, writer=writer)
+                # if created: print('생성되었습니다.') else: print('이미 있습니다.')
+                # comment = Comment(post=post) -> comment.save()
+            except Exception as e:
+                print('Error occured : ',str(e))
+                
             return redirect('blog:detail', pk=pk)
         
         # form.add_error(None,'폼이 유효하지 않습니다.')
