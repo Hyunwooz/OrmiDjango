@@ -45,6 +45,7 @@ class Delete(APIView):
         post = Post.objects.get(pk=pk)
         post.delete()
         return Response({'message': 'Post deleted'}, status=status.HTTP_200_OK)
+    
 ### Comment
 class CommentWrite(APIView):
     def post(self, request, pk):
@@ -60,6 +61,14 @@ class CommentWrite(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST) 
 
 
+class CommentDelete(APIView):
+    def post(self, request, pk):
+        comment = Comment.objects.get(pk=pk)
+        comment.delete()
+        serializer = CommentSerializer(comment)
+        return Response(serializer.data, status=status.HTTP_204_NO_CONTENT)
+    
+    
 ### hashtag
 class HashTagWrite(APIView):
     def post(self, request, pk):
@@ -75,12 +84,6 @@ class HashTagWrite(APIView):
         
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-class CommentDelete(APIView):
-    def post(self, request, pk):
-        comment = Comment.objects.get(pk=pk)
-        comment.delete()
-        serializer = CommentSerializer(comment)
-        return Response(serializer.data, status=status.HTTP_204_NO_CONTENT)
 
 class HashTagDelete(APIView):
     def post(self, request, pk):

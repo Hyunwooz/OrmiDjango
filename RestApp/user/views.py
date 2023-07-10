@@ -1,6 +1,11 @@
 from django.shortcuts import render, redirect
 from django.views import View
 from django.contrib.auth import authenticate, login, logout
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
+from .serializers import ProfileSerializer
+from .models import Profile
 from .forms import RegisterForm, LoginForm
 # Create your views here.
 # user 관련된 기능
@@ -71,3 +76,32 @@ class Logout(View):
     def get(self, request):
             logout(request)
             return redirect('blog:list')
+        
+
+### Profile
+class ProfileWrite(APIView):
+    def post(self, request):
+        user = request.data.get('user')
+        image = request.data.get('image')
+        age = request.data.get('age')
+
+        profile = Profile.objects.create(user=user, image=image, age=age)
+        serializer = ProfileSerializer(profile)
+        
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+
+class ProfileUpdate(APIView):
+    def get():
+        pass
+    def post():
+        pass
+
+
+class ProfileDelete(APIView):
+    def post(self, request):
+        # profile - uesr
+        profile = Profile.objects.get(user=request.user)
+        profile.delete()
+        
+        return Response(status=status.HTTP_200_OK)
