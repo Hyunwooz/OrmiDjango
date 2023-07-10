@@ -20,8 +20,7 @@ class Write(APIView):
         
         if serializer.is_valid():
             
-            post = serializer.save(commit=False)
-            post.writer = request.user
+            post = serializer.save(writer=request.user)
             post.save()
             
             return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -37,8 +36,7 @@ class CommentWrite(APIView):
         
         if serializer.is_valid():
             
-            comment = serializer.save(commit=False)
-            comment.writer = request.user
+            comment = serializer.save(writer=request.user)
             comment.save()
             
             return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -54,8 +52,7 @@ class HashTagWrite(APIView):
         
         if serializer.is_valid():
             
-            hashtag = serializer.save(commit=False)
-            hashtag.writer = request.user
+            hashtag = serializer.save(writer=request.user)
             hashtag.save()
             
             return Response(serializer.data, status=status.HTTP_201_CREATED)

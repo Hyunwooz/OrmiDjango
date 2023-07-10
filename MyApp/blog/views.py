@@ -164,7 +164,7 @@ class DetailView(View):
         # 데이터베이스 방문
         # 해당 글
         # 장고 ORM (pk: 무조건 pk로 작성해야한다.)
-        post = Post.objects.get(pk=pk)
+        # post = Post.objects.get(pk=pk)
         # # 댓글
         # comments = Comment.objects.filter(post=post)
         # # 해시태그
@@ -172,14 +172,19 @@ class DetailView(View):
         # print(post)
         
         # 댓글
+        # Object.objects.select_related('정참조 관계를 갖는 필드명').filter(조건)
+        # comments = Comment.objects.select_related('post').filter(post_pk=pk)
+        # hashtags = HashTag.objects.select_related('post').filter(post_pk=pk)
+        
         # comments = Comment.objects.select_related('writer').filter(post=post)
         # comments = Comment.objects.select_related('writer').filter(post__pk=pk)
-        comments = Comment.objects.select_related('post') # -> comments[0]
+        # comments = Comment.objects.select_related('post') # -> comments[0]
         # comment = Comment.objects.select_related('post').first()
+        
         # 해시태그
         # hashtags = HashTag.objects.select_related('writer').filter(post=post)
         # hashtags = HashTag.objects.select_related('writer').filter(post__pk=pk)
-        hashtags = HashTag.objects.select_related('post')
+        # hashtags = HashTag.objects.select_related('post')
         # print(comments[0].post.title)
         # for comment in comments:
         #     print(comment.post)
@@ -187,27 +192,26 @@ class DetailView(View):
         # value.attr
         # print(hashtags)
         
+        # 글
+        # Object.objects.select_related('정참조 관계를 갖는 필드명').get(조건)
+        post = Post.objects.prefetch_related('comment_set', 'hashtag_set').get(pk=pk)
+        
+        comments = post.comment_set.all()
+        hashtags = post.hashtag_set.all()
+        
         # 댓글 Form
         comment_form = CommentForm()
         
         # 태그 Form
         hashtag_form = HashTagForm()
-
-        post = {
-            'pk': pk,
-            'title': comments[0].post.title,
-            'content': comments[0].post.content,
-            'writer': comments[0].post.writer,
-            'created_at': comments[0].post.created_at,
-        }
         
         context = {
+            'title': 'Blog',
             'post': post,
             'comments': comments,
             'hashtags': hashtags,
             'comment_form': comment_form,
             'hashtag_form': hashtag_form,
-            'title': 'Blog'
         }
         
         return render(request,'blog/post_detail.html', context)
