@@ -81,7 +81,7 @@ class Logout(View):
 ### Profile
 class ProfileWrite(APIView):
     def post(self, request):
-        user = request.data.get('user')
+        user = request.user
         image = request.data.get('image')
         age = request.data.get('age')
 
@@ -92,10 +92,19 @@ class ProfileWrite(APIView):
 
 
 class ProfileUpdate(APIView):
-    def get():
-        pass
-    def post():
-        pass
+    def get(self, request):
+        profile = profile.objects.get(user=request.user)
+        serializer = ProfileSerializer(profile)
+        return Response(serializer.data)
+    
+    def post(self, request):
+        profile = Profile.objects.get(user=request.user)
+        serializer = ProfileSerializer(profile, data=request.data)
+        print(serializer)
+        if serializer.is_valid():  
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.data, status=status.HTTP_400_BAD_REQUEST)
 
 
 class ProfileDelete(APIView):
