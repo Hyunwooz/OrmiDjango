@@ -100,10 +100,11 @@ class ProfileUpdate(APIView):
     def post(self, request):
         profile = Profile.objects.get(user=request.user)
         serializer = ProfileSerializer(profile, data=request.data)
-        print(serializer)
-        if serializer.is_valid():  
+
+        if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
+
         return Response(serializer.data, status=status.HTTP_400_BAD_REQUEST)
 
 

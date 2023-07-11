@@ -29,16 +29,6 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
-# SESSION
-SESSION_ENGINE = 'django.contrib.sessions.backends.db'
-
-SESSION_COOKIE_AGE = 86400   # 24h * 60m * 60 -> client(browser)
-SESSION_EXPIRE_AT_BROWSER_CLOSE = True
-
-# server session -> client session_id
-# server에서 session을 지워줘야 한다.
-# python manage.py clearsessions -> corn (crontab): 스케줄 설정 가능
-
 # Application definition
 
 INSTALLED_APPS = [
@@ -124,6 +114,15 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+# SESSION
+SESSION_ENGINE = 'django.contrib.sessions.backends.db'
+
+SESSION_COOKIE_AGE = 86400   # 24h * 60m * 60 -> client(browser)
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+
+# server session -> client session_id
+# server에서 session을 지워줘야 한다.
+# python manage.py clearsessions -> corn (crontab): 스케줄 설정 가능
 
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/
@@ -146,6 +145,8 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
+
+# Media files
 
 MEDIA_URL = 'media/'
 MEDIA_ROOT = BASE_DIR / 'media'
